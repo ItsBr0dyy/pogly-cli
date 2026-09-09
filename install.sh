@@ -28,8 +28,18 @@ chmod +x "$launcher"
 
 printf '%s' "$version" > "$root/version"
 
-shell_rc="$HOME/.bashrc"
-[ -n "${ZSH_VERSION:-}" ] && shell_rc="$HOME/.zshrc"
+case "$(basename "${SHELL:-bash}")" in
+    zsh)
+        shell_rc="$HOME/.zshrc"
+        ;;
+    bash)
+        shell_rc="$HOME/.bashrc"
+        ;;
+    *)
+        shell_rc="$HOME/.profile"
+        ;;
+esac
+
 if ! grep -qs "$root" "$shell_rc" 2>/dev/null; then
     echo "export PATH=\"$root:\$PATH\"" >> "$shell_rc"
     echo "Added $root to your PATH in $shell_rc (open a new terminal if 'pogly' is not found)."
@@ -40,3 +50,4 @@ echo "pogly-cli $tag installed."
 echo "Get started:"
 echo "  pogly overlay add <overlay-url-or-identity> --token pgly_..."
 echo "  pogly help"
+
