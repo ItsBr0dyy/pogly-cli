@@ -2,11 +2,11 @@
 
 A Windows and Linux command-line tool for managing a [Pogly](https://pogly.gg) overlay through its HTTP API — and an open-source reference for building your own API integrations.
 
-pogly elements add text --text "New follower!" --size 64 --color "
-#82a5ff" --x 200 --y 150
+```
+pogly elements add text --text "New follower!" --size 64 --color "#82a5ff" --x 200 --y 150
 pogly layouts set-active --name "Starting Soon"
 pogly elements list
-
+```
 
 Feedback and questions: https://discord.gg/pogly
 API documentation: https://docs.pogly.gg/#http-api
