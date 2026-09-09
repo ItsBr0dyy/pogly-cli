@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use serde_json::Value;
 use ureq::Agent;
 
