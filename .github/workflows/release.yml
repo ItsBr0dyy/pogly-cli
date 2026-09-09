@@ -40,10 +40,6 @@ jobs:
           grep -q "^version = \"$v\"" Cargo.toml
       - name: Build
         run: cargo build --release --locked
-      - name: Prepare binaries
-        run: |
-          chmod +x target/release/pogly
-          chmod +x target/release/pogly-cli
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
