@@ -37,7 +37,7 @@ This downloads the [latest release](https://github.com/PoglyApp/pogly-cli/releas
    **Windows:**
    ```
    %LOCALAPPDATA%\Pogly\cli\pogly.exe
-   %LOCALAPPDATA%\Pogly\cli\bin<version>\pogly-cli.exe
+   %LOCALAPPDATA%\Pogly\cli\bin\<version>\pogly-cli.exe
    ```
 
    **Linux:**
