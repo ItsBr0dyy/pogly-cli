@@ -51,8 +51,7 @@ pub fn pointer() -> Option<String> {
 
 pub fn set_pointer(version: &str) -> Result<()> {
     std::fs::create_dir_all(paths::local_dir())?;
-    std::fs::write(paths::version_pointer(), version)
-        .context("failed to write version pointer")
+    std::fs::write(paths::version_pointer(), version).context("failed to write version pointer")
 }
 
 fn download_agent() -> Agent {
@@ -134,8 +133,7 @@ pub fn replace_launcher(release: &Value) -> Result<()> {
     });
     let _ = std::fs::remove_file(&old);
     let _ = std::fs::remove_file(&tmp);
-    std::fs::write(&tmp, bytes)
-        .context("failed to write new launcher")?;
+    std::fs::write(&tmp, bytes).context("failed to write new launcher")?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
@@ -144,8 +142,7 @@ pub fn replace_launcher(release: &Value) -> Result<()> {
         permissions.set_mode(0o755);
         std::fs::set_permissions(&tmp, permissions)?;
     }
-    std::fs::rename(&path, &old)
-        .context("failed to move the current launcher aside")?;
+    std::fs::rename(&path, &old).context("failed to move the current launcher aside")?;
     if let Err(e) = std::fs::rename(&tmp, &path) {
         let _ = std::fs::rename(&old, &path);
         return Err(e).context("failed to install new launcher");

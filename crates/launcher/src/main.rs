@@ -82,15 +82,9 @@ fn main() {
         std::process::exit(1);
     };
 
-    let exe = dir
-        .join("bin")
-        .join(&version)
-        .join(cli_binary_name());
+    let exe = dir.join("bin").join(&version).join(cli_binary_name());
     if !exe.is_file() {
-        eprintln!(
-            "pogly-cli {version} is not installed at {}",
-            exe.display()
-        );
+        eprintln!("pogly-cli {version} is not installed at {}", exe.display());
         eprintln!(
             "Run `pogly version list` from an installed version, \
              or reinstall from https://github.com/PoglyApp/pogly-cli/releases"

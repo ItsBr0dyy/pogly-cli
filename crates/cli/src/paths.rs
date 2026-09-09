@@ -72,9 +72,5 @@ pub fn bin_dir() -> PathBuf {
 }
 
 pub fn launcher_path() -> PathBuf {
-    local_dir().join(if cfg!(windows) {
-        "pogly.exe"
-    } else {
-        "pogly"
-    })
+    local_dir().join(if cfg!(windows) { "pogly.exe" } else { "pogly" })
 }
