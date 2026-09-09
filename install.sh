@@ -1,69 +1,42 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
-REPO="PoglyApp/pogly-cli"
-INSTALL_DIR="${POGLY_INSTALL_DIR:-$HOME/.local/bin}"
-LAUNCHER="pogly"
+repo="PoglyApp/pogly-cli"
+root="${XDG_DATA_HOME:-$HOME/.local/share}/Pogly/cli"
 
-echo "Installing Pogly CLI..."
+echo "Installing pogly-cli..."
 
-OS="$(uname -s)"
-ARCH="$(uname -m)"
+release=$(curl -fsSL -H "User-Agent: pogly-cli-installer" "https://api.github.com/repos/$repo/releases/latest")
+tag=$(echo "$release" | grep -m1 '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+version="${tag#v}"
+bin_dir="$root/bin/$version"
 
-if [ "$OS" != "Linux" ]; then
-    echo "Error: this installer currently only supports Linux."
-    echo "Detected: $OS"
-    exit 1
+mkdir -p "$bin_dir"
+
+echo "Downloading pogly-cli $tag..."
+curl -fsSL -o "$bin_dir/pogly-cli" "https://github.com/$repo/releases/download/$tag/pogly-cli"
+chmod +x "$bin_dir/pogly-cli"
+
+launcher="$root/pogly"
+echo "Downloading launcher..."
+if ! curl -fsSL -o "$launcher" "https://github.com/$repo/releases/download/$tag/pogly"; then
+    mv -f "$launcher" "$launcher.old" 2>/dev/null || true
+    curl -fsSL -o "$launcher" "https://github.com/$repo/releases/download/$tag/pogly"
+fi
+chmod +x "$launcher"
+
+printf '%s' "$version" > "$root/version"
+
+shell_rc="$HOME/.bashrc"
+[ -n "${ZSH_VERSION:-}" ] && shell_rc="$HOME/.zshrc"
+if ! grep -qs "$root" "$shell_rc" 2>/dev/null; then
+    echo "export PATH=\"$root:\$PATH\"" >> "$shell_rc"
+    echo "Added $root to your PATH in $shell_rc (open a new terminal if 'pogly' is not found)."
 fi
 
-case "$ARCH" in
-    x86_64)
-        ASSET="pogly"
-        ;;
-    *)
-        echo "Error: unsupported architecture: $ARCH"
-        echo "Currently supported: x86_64"
-        exit 1
-        ;;
-esac
-
-DOWNLOAD_URL="https://github.com/$REPO/releases/latest/download/$ASSET"
-
-mkdir -p "$INSTALL_DIR"
-
-echo "Downloading $ASSET..."
-
-if command -v curl >/dev/null 2>&1; then
-    curl -fL "$DOWNLOAD_URL" -o "$INSTALL_DIR/$LAUNCHER"
-elif command -v wget >/dev/null 2>&1; then
-    wget -O "$INSTALL_DIR/$LAUNCHER" "$DOWNLOAD_URL"
-else
-    echo "Error: curl or wget is required."
-    exit 1
-fi
-
-chmod +x "$INSTALL_DIR/$LAUNCHER"
-
 echo ""
-echo "Pogly CLI installed successfully!"
-echo ""
-echo "Location:"
-echo "  $INSTALL_DIR/$LAUNCHER"
-echo ""
-
-case ":${PATH:-}:" in
-    *":$INSTALL_DIR:"*)
-        echo "You can now run:"
-        echo "  pogly --help"
-        ;;
-    *)
-        echo "Add this directory to your PATH:"
-        echo ""
-        echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
-        echo ""
-        echo "For fish:"
-        echo ""
-        echo "  fish_add_path $INSTALL_DIR"
-        ;;
-esac
+echo "pogly-cli $tag installed."
+echo "Get started:"
+echo "  pogly overlay add <overlay-url-or-identity> --token pgly_..."
+echo "  pogly help"
